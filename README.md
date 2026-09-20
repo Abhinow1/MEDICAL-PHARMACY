@@ -2,6 +2,9 @@
 
 A production-ready, minimal, modern, and compliant online medical store and administrative operations platform built with **React (Vite), Node.js, Express, MongoDB (Mongoose), Tailwind CSS, and Recharts**.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arju6/medical_store)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farju6%2Fmedical_store&root-directory=client)
+
 ---
 
 ## 1. Project Overview
