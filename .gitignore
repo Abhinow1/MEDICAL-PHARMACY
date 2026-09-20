@@ -15,4 +15,5 @@ server/uploads/prescriptions/*
 server/uploads/medicines/*
 !server/uploads/medicines/.gitkeep
 *.log
+cloudflared
 
