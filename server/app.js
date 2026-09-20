@@ -20,31 +20,16 @@ const app = express();
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: false,
   })
 );
 
-// CORS configuration
-const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173',
-];
-
+// CORS configuration - Allow storefront access across web, mobile, and cloud environments
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, server-to-server)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
-      }
-      if (process.env.CLIENT_URL) {
-        const customOrigins = process.env.CLIENT_URL.split(',').map((o) => o.trim());
-        if (customOrigins.includes(origin) || customOrigins.includes('*')) {
-          return callback(null, true);
-        }
-      }
-      callback(new Error('CORS policy: Not allowed by CORS'));
+      // Allow all origins (browser storefront, mobile apps, curl, tunnels, Vercel, Render)
+      return callback(null, true);
     },
     credentials: true,
   })
