@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: medicare-app
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - MONGODB_URI=mongodb://mongo:27017/medicare
+      - JWT_SECRET=medicare_super_secret_jwt_key_docker_2026
+      - CLIENT_URL=http://localhost:5001
+      - WHATSAPP_NUMBER=919876543210
+    depends_on:
+      - mongo
+    volumes:
+      - prescription_uploads:/app/server/uploads
+
+  mongo:
+    image: mongo:7.0
+    container_name: medicare-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+  prescription_uploads:

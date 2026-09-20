@@ -1,0 +1,30 @@
+{
+  "name": "medicare-medical-store",
+  "version": "1.0.0",
+  "description": "Production-ready online medical store and pharmacy with admin management and P&L analytics",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "start": "npm --prefix server start",
+    "seed": "npm --prefix server run seed",
+    "test": "npm --prefix server test",
+    "build": "npm --prefix client run build",
+    "build:all": "npm --prefix client install && npm --prefix client run build && npm --prefix server install"
+  },
+  "keywords": [
+    "pharmacy",
+    "e-commerce",
+    "medical-store",
+    "mern",
+    "react",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
