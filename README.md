@@ -1,15 +1,15 @@
-# MediCare Pharmacy — Full-Stack E-Commerce & Pharmacy Management System
+# St Mary's Pharmacy — Full-Stack E-Commerce & Pharmacy Management System
 
 A production-ready, minimal, modern, and compliant online medical store and administrative operations platform built with **React (Vite), Node.js, Express, MongoDB (Mongoose), Tailwind CSS, and Recharts**.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arju6/medical_store)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farju6%2Fmedical_store&root-directory=client)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Abhinow1/MEDICAL-PHARMACY)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAbhinow1%2FMEDICAL-PHARMACY)
 
 ---
 
 ## 1. Project Overview
 
-MediCare Pharmacy delivers a seamless, accessible digital experience for ordering genuine medicines, vitamins, and chronic healthcare products. The system is architected with two distinct portals:
+St Mary's Pharmacy delivers a seamless, accessible digital experience for ordering genuine medicines, vitamins, and chronic healthcare products. The system is architected with two distinct portals:
 
 1. **Customer Storefront**: Fast catalog search with debouncing, department filtering, shopping cart with server-side price recalculation, prescription upload verification for Schedule H/Rx drugs, visual multi-step order tracking, AI chatbot product assistance, and official WhatsApp Click-to-Chat integration.
 2. **Admin Operations Panel**: Comprehensive dashboard with real-time KPI metrics, daily and monthly sales trends, interactive Profit & Loss (P&L) statements (Gross Profit = Revenue - Product Cost; Net Profit = Gross Profit - Operating Expenses), inventory stock valuation, manual stock adjustment ledger with audit reasons, doctor prescription review queue, and customer account administration.

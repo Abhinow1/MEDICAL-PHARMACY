@@ -4,6 +4,7 @@ node_modules/
 !.env.example
 .DS_Store
 dist/
+public/
 build/
 coverage/
 uploads/prescriptions/*
