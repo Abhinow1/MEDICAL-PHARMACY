@@ -374,13 +374,664 @@ export const filterFallbackMedicines = (url) => {
 };
 
 /**
+ * Helper to safely parse Axios request data
+ */
+const parseBody = (data) => {
+  if (!data) return {};
+  if (typeof data === 'object') return data;
+  try {
+    return JSON.parse(data);
+  } catch {
+    return {};
+  }
+};
+
+/**
+ * Mock data helpers for storage-backed offline/preview demo
+ */
+const DEFAULT_CUSTOMER = {
+  _id: 'usr-customer-101',
+  name: 'Rahul Sharma',
+  email: 'customer@example.com',
+  phone: '+919812345678',
+  role: 'USER',
+  isActive: true,
+  addresses: [
+    {
+      fullName: 'Rahul Sharma',
+      phone: '+919812345678',
+      streetAddress: 'Flat 402, Green Meadows, 14th Main Rd',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      postalCode: '560034',
+      landmark: 'Near Koramangala Police Station',
+      isDefault: true,
+    },
+  ],
+};
+
+const DEFAULT_ADMIN = {
+  _id: 'usr-admin-001',
+  name: 'Dr. Sarah Jenkins (Pharmacist Admin)',
+  email: 'admin@stmarys.com',
+  phone: '+919876543210',
+  role: 'ADMIN',
+  isActive: true,
+};
+
+const getMockCart = () => {
+  try {
+    const raw = localStorage.getItem('mock_pharmacy_cart');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return {
+    items: [],
+    subtotal: 0,
+    discount: 0,
+    deliveryFee: 0,
+    grandTotal: 0,
+    prescriptionRequired: false,
+  };
+};
+
+const saveMockCart = (cart) => {
+  let subtotal = 0;
+  let discount = 0;
+  let rxReq = false;
+
+  (cart.items || []).forEach((item) => {
+    const orig = (item.medicine?.mrp || item.medicine?.price || 50) * item.quantity;
+    const discPct = item.medicine?.discountPercent || item.medicine?.discount || 0;
+    const finalPrice = Math.round((orig - (orig * discPct) / 100) * 100) / 100;
+    subtotal += orig;
+    discount += orig - finalPrice;
+    if (item.medicine?.prescriptionRequired) rxReq = true;
+  });
+
+  const discounted = Math.round((subtotal - discount) * 100) / 100;
+  const deliveryFee = cart.items.length === 0 || discounted >= 500 ? 0 : 40;
+  const grandTotal = Math.round((discounted + deliveryFee) * 100) / 100;
+
+  const updated = {
+    items: cart.items,
+    subtotal: Math.round(subtotal * 100) / 100,
+    discount: Math.round(discount * 100) / 100,
+    deliveryFee,
+    grandTotal,
+    prescriptionRequired: rxReq,
+  };
+
+  localStorage.setItem('mock_pharmacy_cart', JSON.stringify(updated));
+  return updated;
+};
+
+/**
  * Main fallback request handler for client API interceptor
  */
 export const handleFallbackRequest = (config) => {
   if (!config || !config.url) return null;
   const url = config.url;
+  const method = (config.method || 'get').toLowerCase();
 
-  // 1. Categories
+  // 1. Authentication: Login
+  if (url.includes('/auth/login') && method === 'post') {
+    const body = parseBody(config.data);
+    let matchedUser = DEFAULT_CUSTOMER;
+    try {
+      const users = JSON.parse(localStorage.getItem('mock_users_db') || '[]');
+      const found = users.find((u) => u.email?.toLowerCase() === body.email?.toLowerCase());
+      if (found) matchedUser = found;
+    } catch {}
+
+    if (body.email && body.email !== 'customer@example.com') {
+      matchedUser = {
+        ...DEFAULT_CUSTOMER,
+        email: body.email,
+        name: body.email.split('@')[0],
+      };
+    }
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          token: 'mock-jwt-customer-' + Date.now(),
+          user: matchedUser,
+        },
+        message: 'Login successful',
+      },
+    });
+  }
+
+  // 2. Authentication: Admin Login
+  if (url.includes('/auth/admin-login') && method === 'post') {
+    const body = parseBody(config.data);
+    const adminUser = {
+      ...DEFAULT_ADMIN,
+      email: body.email || 'admin@stmarys.com',
+    };
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          token: 'mock-jwt-admin-' + Date.now(),
+          admin: adminUser,
+        },
+        message: 'Admin login successful',
+      },
+    });
+  }
+
+  // 3. Authentication: Register
+  if (url.includes('/auth/register') && method === 'post') {
+    const body = parseBody(config.data);
+    const newUser = {
+      _id: 'usr-' + Date.now(),
+      name: body.name || 'New Customer',
+      email: body.email || 'customer@example.com',
+      phone: body.phone || '+919876543210',
+      role: 'USER',
+      addresses: [],
+      isActive: true,
+    };
+
+    try {
+      const users = JSON.parse(localStorage.getItem('mock_users_db') || '[]');
+      users.push(newUser);
+      localStorage.setItem('mock_users_db', JSON.stringify(users));
+    } catch {}
+
+    return Promise.resolve({
+      status: 201,
+      data: {
+        success: true,
+        data: {
+          token: 'mock-jwt-customer-' + Date.now(),
+          user: newUser,
+        },
+        message: 'Registration successful',
+      },
+    });
+  }
+
+  // 4. Authentication: Profile
+  if (url.includes('/auth/profile')) {
+    let currentUser = DEFAULT_CUSTOMER;
+    try {
+      const stored = localStorage.getItem('medicare_user');
+      if (stored) currentUser = JSON.parse(stored);
+    } catch {}
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { user: currentUser },
+      },
+    });
+  }
+
+  // 5. Authentication: Address Add
+  if (url.includes('/auth/address') && method === 'post') {
+    const body = parseBody(config.data);
+    let currentUser = DEFAULT_CUSTOMER;
+    try {
+      const stored = localStorage.getItem('medicare_user');
+      if (stored) currentUser = JSON.parse(stored);
+    } catch {}
+
+    currentUser.addresses = currentUser.addresses || [];
+    currentUser.addresses.push({
+      ...body,
+      isDefault: currentUser.addresses.length === 0,
+    });
+
+    localStorage.setItem('medicare_user', JSON.stringify(currentUser));
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { addresses: currentUser.addresses },
+        message: 'Address saved successfully',
+      },
+    });
+  }
+
+  // 6. Shopping Cart: Add
+  if (url.includes('/cart/add') && method === 'post') {
+    const body = parseBody(config.data);
+    const med = FALLBACK_MEDICINES.find((m) => m._id === body.medicineId) || FALLBACK_MEDICINES[0];
+    const cart = getMockCart();
+    const existing = cart.items.find((i) => i.medicine?._id === med._id);
+
+    if (existing) {
+      existing.quantity += body.quantity || 1;
+    } else {
+      cart.items.push({
+        _id: 'ci-' + Date.now(),
+        medicine: med,
+        quantity: body.quantity || 1,
+      });
+    }
+
+    const updated = saveMockCart(cart);
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: updated,
+        message: 'Item added to cart',
+      },
+    });
+  }
+
+  // 7. Shopping Cart: Update Quantity
+  if (url.includes('/cart/item/') && (method === 'put' || method === 'patch')) {
+    const body = parseBody(config.data);
+    const cart = getMockCart();
+    const itemId = url.split('/cart/item/')[1]?.split('?')[0];
+    const item = cart.items.find((i) => i._id === itemId || i.medicine?._id === itemId);
+
+    if (item) {
+      item.quantity = body.quantity;
+    }
+
+    const updated = saveMockCart(cart);
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: updated,
+      },
+    });
+  }
+
+  // 8. Shopping Cart: Delete Item
+  if (url.includes('/cart/item/') && method === 'delete') {
+    const cart = getMockCart();
+    const itemId = url.split('/cart/item/')[1]?.split('?')[0];
+    cart.items = cart.items.filter((i) => i._id !== itemId && i.medicine?._id !== itemId);
+    const updated = saveMockCart(cart);
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: updated,
+      },
+    });
+  }
+
+  // 9. Shopping Cart: Clear
+  if (url.includes('/cart/clear') || (url.endsWith('/cart') && method === 'delete')) {
+    const updated = saveMockCart({ items: [] });
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: updated,
+      },
+    });
+  }
+
+  // 10. Shopping Cart: Get
+  if (url.includes('/cart') && method === 'get') {
+    const cart = getMockCart();
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: cart,
+      },
+    });
+  }
+
+  // 11. Orders: Create / Place Order
+  if (url.includes('/orders') && method === 'post') {
+    const body = parseBody(config.data);
+    const cart = getMockCart();
+    const orderNumber = 'STM-' + Math.floor(100000 + Math.random() * 900000);
+
+    const newOrder = {
+      _id: 'ord-' + Date.now(),
+      orderNumber,
+      createdAt: new Date().toISOString(),
+      items: cart.items.map((i) => ({
+        medicine: i.medicine,
+        name: i.medicine?.name || 'Medicine',
+        price: i.medicine?.price || 50,
+        costPrice: Math.round((i.medicine?.price || 50) * 0.65),
+        quantity: i.quantity,
+        subtotal: (i.medicine?.price || 50) * i.quantity,
+      })),
+      shippingAddress: body.shippingAddress || DEFAULT_CUSTOMER.addresses[0],
+      subtotal: cart.subtotal || 250,
+      discount: cart.discount || 25,
+      deliveryFee: cart.deliveryFee || 0,
+      total: cart.grandTotal || 225,
+      orderStatus: body.prescriptionId ? 'PRESCRIPTION_PENDING' : 'PROCESSING',
+      paymentMethod: body.paymentMethod || 'TEST',
+      paymentStatus: 'PAID',
+    };
+
+    try {
+      const orders = JSON.parse(localStorage.getItem('mock_orders_db') || '[]');
+      orders.unshift(newOrder);
+      localStorage.setItem('mock_orders_db', JSON.stringify(orders));
+    } catch {}
+
+    saveMockCart({ items: [] }); // clear cart
+
+    return Promise.resolve({
+      status: 201,
+      data: {
+        success: true,
+        data: { order: newOrder },
+        message: 'Order placed successfully',
+      },
+    });
+  }
+
+  // 12. Orders: List User Orders
+  if (url.includes('/orders') && method === 'get' && !url.includes('/admin/')) {
+    let orders = [];
+    try {
+      orders = JSON.parse(localStorage.getItem('mock_orders_db') || '[]');
+    } catch {}
+
+    if (orders.length === 0) {
+      orders = [
+        {
+          _id: 'ord-mock-sample-1',
+          orderNumber: 'STM-834921',
+          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+          items: [
+            {
+              medicine: FALLBACK_MEDICINES[0],
+              name: 'Dolo 650 Tablet',
+              price: 33,
+              quantity: 2,
+              subtotal: 66,
+            },
+          ],
+          total: 106,
+          orderStatus: 'DELIVERED',
+        },
+      ];
+    }
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { orders },
+      },
+    });
+  }
+
+  // 13. Prescriptions: Upload
+  if (url.includes('/prescriptions') && method === 'post') {
+    const rx = {
+      _id: 'rx-' + Date.now(),
+      status: 'PENDING',
+      fileUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500',
+      createdAt: new Date().toISOString(),
+    };
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { prescription: rx },
+        message: 'Prescription uploaded successfully',
+      },
+    });
+  }
+
+  // 14. Prescriptions: Get
+  if (url.includes('/prescriptions') && method === 'get' && !url.includes('/admin/')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { prescriptions: [] },
+      },
+    });
+  }
+
+  // 15. AI Chatbot
+  if (url.includes('/chat') && method === 'post') {
+    const body = parseBody(config.data);
+    const msg = (body.message || '').toLowerCase();
+    let reply = "Hello! I am your St Mary's Pharmacy Assistant. We provide genuine medicines, express delivery, and doctor prescription verification.";
+
+    if (msg.includes('chest') || msg.includes('pain') || msg.includes('diagnos')) {
+      reply = "⚠️ Important Medical Notice: As an automated pharmacy assistant, I cannot diagnose conditions. If you are experiencing chest pain or an acute emergency, please call 112 / 102 or visit the nearest hospital.";
+    } else if (msg.includes('delivery') || msg.includes('charge')) {
+      reply = "🚚 Free delivery on all orders above ₹500! A nominal ₹40 fee applies for smaller orders. Standard delivery takes 24-48 hours.";
+    } else if (msg.includes('time') || msg.includes('hour')) {
+      reply = "🕒 Physical Dispensary Hours: Monday–Saturday 8:00 AM – 10:00 PM, Sunday 9:00 AM – 6:00 PM. Online ordering is available 24/7!";
+    }
+
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: { reply },
+      },
+    });
+  }
+
+  // 16. Indian Medicine Search & Substitutes
+  if (url.includes('/external-medicines')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          medicines: FALLBACK_MEDICINES,
+          substitutes: [
+            { brandName: 'Calpol 650', genericComposition: 'Paracetamol (650mg)', mrp: 32.5, manufacturer: 'GSK' },
+            { brandName: 'Crocin 650', genericComposition: 'Paracetamol (650mg)', mrp: 34.0, manufacturer: 'Haleon' },
+            { brandName: 'Pacimol 650', genericComposition: 'Paracetamol (650mg)', mrp: 29.0, manufacturer: 'Ipca' },
+          ],
+        },
+      },
+    });
+  }
+
+  // 17. Admin Analytics & Management
+  if (url.includes('/admin/analytics/overview')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          todaySales: 12450,
+          todayGrossProfit: 4320,
+          monthlySales: 348200,
+          monthlyGrossProfit: 121870,
+          monthlyExpenses: 42000,
+          monthlyNetProfit: 79870,
+          totalOrders: 1420,
+          pendingOrders: 18,
+          totalCustomers: 856,
+          lowStockCount: 4,
+          pendingPrescriptionsCount: 6,
+          totalRevenue: 348200,
+          totalProductCost: 226330,
+          totalGrossProfit: 121870,
+          totalExpenses: 42000,
+          netProfit: 79870,
+          averageOrderValue: 245,
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/analytics/sales')) {
+    const days = 30;
+    const trend = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      trend.push({
+        date: d.toISOString().split('T')[0],
+        label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        revenue: Math.round(9000 + Math.sin(i) * 3500 + Math.random() * 2000),
+        cost: Math.round(5500 + Math.sin(i) * 2000),
+        grossProfit: Math.round(3500 + Math.sin(i) * 1500),
+        expenses: 1400,
+        netProfit: Math.round(2100 + Math.sin(i) * 1500),
+        ordersCount: Math.round(25 + Math.random() * 15),
+      });
+    }
+    return Promise.resolve({
+      status: 200,
+      data: { success: true, data: { trend } },
+    });
+  }
+
+  if (url.includes('/admin/analytics/top-products')) {
+    const topProducts = FALLBACK_MEDICINES.slice(0, 5).map((m, idx) => ({
+      id: m._id,
+      name: m.name,
+      brand: m.brand,
+      totalQuantity: 240 - idx * 35,
+      totalRevenue: (240 - idx * 35) * m.price,
+      grossProfit: Math.round((240 - idx * 35) * m.price * 0.35),
+    }));
+    return Promise.resolve({
+      status: 200,
+      data: { success: true, data: { topProducts } },
+    });
+  }
+
+  if (url.includes('/admin/medicines')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          medicines: FALLBACK_MEDICINES,
+          pagination: { total: FALLBACK_MEDICINES.length, page: 1, limit: 20, totalPages: 1 },
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/orders')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          orders: [
+            {
+              _id: 'ord-adm-1',
+              orderNumber: 'STM-99214',
+              user: { name: 'Rahul Sharma', email: 'customer@example.com' },
+              total: 340,
+              grossProfit: 120,
+              orderStatus: 'PENDING',
+              paymentStatus: 'PAID',
+              prescriptionRequired: true,
+              createdAt: new Date().toISOString(),
+            },
+            {
+              _id: 'ord-adm-2',
+              orderNumber: 'STM-99180',
+              user: { name: 'Ananya Verma', email: 'ananya@example.com' },
+              total: 580,
+              grossProfit: 210,
+              orderStatus: 'PROCESSING',
+              paymentStatus: 'PAID',
+              prescriptionRequired: false,
+              createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+            },
+          ],
+          pagination: { total: 2, page: 1, limit: 20, totalPages: 1 },
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/inventory')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          inventory: FALLBACK_MEDICINES,
+          summary: {
+            totalItems: FALLBACK_MEDICINES.length,
+            totalStockUnits: 1840,
+            retailStockValuation: 248900,
+            costStockValuation: 161785,
+            lowStockCount: 2,
+            outOfStockCount: 0,
+          },
+          history: [],
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/expenses')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          expenses: [
+            { _id: 'exp-1', title: 'Monthly Pharmacy Rent', category: 'RENT', amount: 25000, date: new Date().toISOString() },
+            { _id: 'exp-2', title: 'Commercial Electricity Bill', category: 'ELECTRICITY', amount: 6500, date: new Date().toISOString() },
+            { _id: 'exp-3', title: 'Courier Delivery Partner', category: 'COURIER', amount: 4800, date: new Date().toISOString() },
+          ],
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/prescriptions')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          prescriptions: [
+            {
+              _id: 'rx-rev-1',
+              user: { name: 'Rahul Sharma', email: 'customer@example.com' },
+              status: 'PENDING',
+              fileUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500',
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  if (url.includes('/admin/users')) {
+    return Promise.resolve({
+      status: 200,
+      data: {
+        success: true,
+        data: {
+          users: [
+            DEFAULT_CUSTOMER,
+            { _id: 'usr-102', name: 'Ananya Verma', email: 'ananya@example.com', phone: '+919833445566', role: 'USER', isActive: true },
+          ],
+          pagination: { total: 2, page: 1, limit: 20, totalPages: 1 },
+        },
+      },
+    });
+  }
+
+  // 18. Storefront Catalog: Categories
   if (url.includes('/medicines/categories')) {
     return Promise.resolve({
       status: 200,
@@ -392,7 +1043,7 @@ export const handleFallbackRequest = (config) => {
     });
   }
 
-  // 2. Featured Medicines (Deals & Trending)
+  // 19. Storefront Catalog: Featured Medicines
   if (url.includes('/medicines/featured')) {
     return Promise.resolve({
       status: 200,
@@ -404,7 +1055,7 @@ export const handleFallbackRequest = (config) => {
     });
   }
 
-  // 3. Single Medicine Detail
+  // 20. Storefront Catalog: Single Medicine Detail
   const singleMatch = url.match(/\/medicines\/([a-zA-Z0-9_-]+)(?:\?|$)/);
   if (singleMatch && !url.includes('categories') && !url.includes('featured') && !url.includes('external')) {
     const medId = singleMatch[1];
@@ -423,7 +1074,7 @@ export const handleFallbackRequest = (config) => {
     });
   }
 
-  // 4. Catalog List & Filters
+  // 21. Storefront Catalog: List & Filters
   if (url.includes('/medicines')) {
     const result = filterFallbackMedicines(url);
     return Promise.resolve({
@@ -436,7 +1087,7 @@ export const handleFallbackRequest = (config) => {
     });
   }
 
-  // 5. Health Check
+  // 22. Health Check
   if (url.includes('/health')) {
     return Promise.resolve({
       status: 200,
