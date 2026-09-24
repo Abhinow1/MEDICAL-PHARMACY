@@ -26,7 +26,7 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'online',
     timestamp: new Date().toISOString(),
-    service: 'MediCare Pharmacy REST API',
+    service: "St Mary's Pharmacy REST API",
   });
 });
 

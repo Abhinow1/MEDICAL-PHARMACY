@@ -109,7 +109,7 @@ const LoginPage = () => {
         </div>
 
         <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
-          New to MediCare?{' '}
+          New to St Mary's Pharmacy?{' '}
           <Link to="/register" className="font-bold text-teal-600 hover:underline">
             Create an Account
           </Link>

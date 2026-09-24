@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto flex items-start gap-2.5">
           <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
           <p className="leading-relaxed">
-            <strong>Mandatory Medical Disclaimer:</strong> Information and products listed on MediCare Pharmacy are intended strictly for informational and retail reference purposes. This website does not offer clinical diagnosis or personalized medical treatment. Always consult a licensed medical doctor or certified healthcare practitioner before starting any medication.
+            <strong>Mandatory Medical Disclaimer:</strong> Information and products listed on St Mary's Pharmacy are intended strictly for informational and retail reference purposes. This website does not offer clinical diagnosis or personalized medical treatment. Always consult a licensed medical doctor or certified healthcare practitioner before starting any medication.
           </p>
         </div>
       </div>
@@ -24,7 +24,7 @@ const Footer = () => {
               <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white">
                 <PlusCircle className="w-5 h-5" />
               </div>
-              <span className="text-white font-bold text-base tracking-tight">MediCare Pharmacy</span>
+              <span className="text-white font-bold text-base tracking-tight">St Mary's Pharmacy</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               Your registered, certified community pharmacy delivering authentic medicines, chronic health supplies, and wellness essentials with speed and care.
@@ -55,7 +55,7 @@ const Footer = () => {
               <li><Link to="/contact" className="hover:text-teal-400 transition">Store Hours & Delivery</Link></li>
               <li>
                 <a
-                  href={createWhatsAppUrl('Hello MediCare, I have an inquiry regarding a prescription order.')}
+                  href={createWhatsAppUrl('Hello St Mary\'s Pharmacy, I have an inquiry regarding a prescription order.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-emerald-400 transition flex items-center gap-1 text-emerald-500 font-medium"
@@ -87,7 +87,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-slate-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} MediCare Pharmacy. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} St Mary's Pharmacy. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <Link to="/contact" className="hover:text-slate-400">Terms of Service</Link>
             <Link to="/contact" className="hover:text-slate-400">Privacy Policy</Link>

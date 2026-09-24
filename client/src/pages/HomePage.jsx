@@ -279,7 +279,7 @@ const HomePage = () => {
 
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
           <a
-            href={createWhatsAppUrl('Hello Pharmacist, I need help finding a medicine on MediCare.')}
+            href={createWhatsAppUrl('Hello Pharmacist, I need help finding a medicine on St Mary\'s Pharmacy.')}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0c3c2f] hover:bg-[#144d3d] text-white font-bold text-xs shadow-sm transition"

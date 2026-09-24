@@ -2,7 +2,7 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { createWhatsAppUrl } from '../utils/formatters';
 
-const WhatsAppFloatingButton = ({ customMessage = 'Hello MediCare Pharmacy, I need help with a medicine.' }) => {
+const WhatsAppFloatingButton = ({ customMessage = 'Hello St Mary\'s Pharmacy, I need help with a medicine.' }) => {
   return (
     <a
       href={createWhatsAppUrl(customMessage)}

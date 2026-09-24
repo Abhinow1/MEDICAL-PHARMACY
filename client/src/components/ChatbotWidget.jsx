@@ -18,7 +18,7 @@ const ChatbotWidget = () => {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: 'Hello! I am your MediCare Pharmacy Assistant. How can I help you today? Ask about medicines, delivery, store timings, or order status.',
+      text: 'Hello! I am your St Mary\'s Pharmacy Assistant. How can I help you today? Ask about medicines, delivery, store timings, or order status.',
       timestamp: new Date(),
     },
   ]);
@@ -115,7 +115,7 @@ const ChatbotWidget = () => {
               </div>
               <div>
                 <h4 className="text-xs font-bold flex items-center gap-1.5">
-                  MediCare Assistant
+                  St Mary's Assistant
                   <span className="text-[10px] bg-teal-900/80 text-teal-300 px-1.5 py-0.2 rounded font-normal">
                     AI Helper
                   </span>

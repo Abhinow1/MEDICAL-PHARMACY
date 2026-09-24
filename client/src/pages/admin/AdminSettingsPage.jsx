@@ -13,7 +13,7 @@ import api from '../../services/api';
 import { formatDateTime } from '../../utils/formatters';
 
 const AdminSettingsPage = () => {
-  const [storeName, setStoreName] = useState('MediCare Pharmacy');
+  const [storeName, setStoreName] = useState("St Mary's Pharmacy");
   const [whatsappNumber, setWhatsappNumber] = useState('919876543210');
   const [drugLicense, setDrugLicense] = useState('DL-KA-BNG-2024-88491');
   const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('500');

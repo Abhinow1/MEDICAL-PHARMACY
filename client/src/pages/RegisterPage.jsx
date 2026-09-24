@@ -63,7 +63,7 @@ const RegisterPage = () => {
             Create Account
           </h1>
           <p className="text-xs text-slate-500">
-            Join MediCare Pharmacy for express delivery and prescription management
+            Join St Mary's Pharmacy for express delivery and prescription management
           </p>
         </div>
 

@@ -46,7 +46,7 @@ const AdminSidebar = () => {
           </div>
           <div>
             <h2 className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
-              MediCare <span className="text-[10px] bg-teal-900 text-teal-300 font-semibold px-1.5 py-0.5 rounded">Admin</span>
+              St Mary's <span className="text-[10px] bg-teal-900 text-teal-300 font-semibold px-1.5 py-0.5 rounded">Admin</span>
             </h2>
             <p className="text-[11px] text-slate-400">Pharmacy Operations</p>
           </div>
@@ -84,7 +84,7 @@ const AdminSidebar = () => {
           </div>
           <div className="truncate">
             <div className="text-xs font-semibold text-white truncate">{user?.name || 'Administrator'}</div>
-            <div className="text-[10px] text-slate-400 truncate">{user?.email || 'admin@medicare.com'}</div>
+            <div className="text-[10px] text-slate-400 truncate">{user?.email || 'admin@stmarys.com'}</div>
           </div>
         </div>
 

@@ -61,7 +61,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
             <span className="text-xl font-black text-[#0c3c2f] tracking-tight uppercase flex items-center">
-              MEDICARE<span className="text-[#8ee055] text-2xl font-black ml-0.5 leading-none">.</span>
+              ST. MARY'S<span className="text-[#8ee055] text-2xl font-black ml-0.5 leading-none">.</span>
             </span>
           </Link>
 

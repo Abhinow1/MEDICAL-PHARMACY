@@ -239,7 +239,7 @@ const AdminOrdersPage = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         {/* WhatsApp customer link */}
                         <a
-                          href={createWhatsAppUrl(`Hello ${ord.user?.name || 'Customer'}, this is MediCare Pharmacy regarding your Order #${ord.orderNumber}.`, ord.shippingAddress?.phone || ord.user?.phone)}
+                          href={createWhatsAppUrl(`Hello ${ord.user?.name || 'Customer'}, this is St Mary's Pharmacy regarding your Order #${ord.orderNumber}.`, ord.shippingAddress?.phone || ord.user?.phone)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"

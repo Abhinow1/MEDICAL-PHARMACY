@@ -155,7 +155,7 @@ Visit the "Orders" page for real-time tracking details!`,
 
     // 5. Default Friendly Fallback with WhatsApp Handoff
     return {
-      reply: `Hello! I am the MediCare Pharmacy Assistant. How can I help you today?
+      reply: `Hello! I am the St Mary's Pharmacy Assistant. How can I help you today?
 • You can ask: "Do you have Paracetamol?"
 • "What are your store hours?"
 • "Tell me about delivery charges"
@@ -163,7 +163,7 @@ Visit the "Orders" page for real-time tracking details!`,
 
 Need personalized assistance from our pharmacist? You can chat with our team on WhatsApp anytime!`,
       action: 'GENERAL_HELP',
-      whatsappUrl: `https://wa.me/${storeWhatsApp}?text=${encodeURIComponent('Hello, I need help regarding medicines on MediCare.')}`,
+      whatsappUrl: `https://wa.me/${storeWhatsApp}?text=${encodeURIComponent('Hello, I need help regarding medicines on St Mary\'s Pharmacy.')}`,
     };
   }
 }

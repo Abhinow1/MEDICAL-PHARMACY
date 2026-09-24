@@ -186,7 +186,7 @@ const CheckoutPage = () => {
             Order Confirmed!
           </h1>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            Thank you for ordering with MediCare Pharmacy. Your order has been placed and received by our licensed dispensary team.
+            Thank you for ordering with St Mary's Pharmacy. Your order has been placed and received by our licensed dispensary team.
           </p>
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left text-xs space-y-2 max-w-md mx-auto">

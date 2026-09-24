@@ -28,7 +28,7 @@ const ContactPage = () => {
         <ShieldAlert className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
         <div className="leading-relaxed">
           <strong className="block font-bold text-sm mb-0.5">Medical Emergency Notice:</strong>
-          MediCare Pharmacy provides retail pharmaceutical dispensary services. If you or a loved one is facing an acute medical emergency, chest pain, difficulty breathing, or poisoning, please call emergency services (112 / 102) or go to the nearest emergency hospital immediately.
+          St Mary's Pharmacy provides retail pharmaceutical dispensary services. If you or a loved one is facing an acute medical emergency, chest pain, difficulty breathing, or poisoning, please call emergency services (112 / 102) or go to the nearest emergency hospital immediately.
         </div>
       </div>
 
@@ -40,7 +40,7 @@ const ContactPage = () => {
               <Building2 className="w-4 h-4 text-teal-600" /> Physical Pharmacy Dispensary
             </h3>
             <div className="text-xs text-slate-600 space-y-1.5 leading-relaxed">
-              <p className="font-semibold text-slate-800">MediCare Licensed Community Pharmacy</p>
+              <p className="font-semibold text-slate-800">St Mary's Licensed Community Pharmacy</p>
               <p>#42 Healthcare Boulevard, 100ft Ring Road, Indiranagar</p>
               <p>Bengaluru, Karnataka 560038, India</p>
               <p className="text-slate-400 text-[11px] pt-1">
@@ -80,7 +80,7 @@ const ContactPage = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-teal-600" />
-                <span>Email: <strong className="text-slate-900">support@medicare.com</strong></span>
+                <span>Email: <strong className="text-slate-900">support@stmaryspharmacy.com</strong></span>
               </div>
             </div>
           </div>

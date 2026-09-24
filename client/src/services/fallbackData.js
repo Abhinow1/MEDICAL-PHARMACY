@@ -1,5 +1,5 @@
 /**
- * Resilient Client-Side Fallback Catalog for MediCare Pharmacy
+ * Resilient Client-Side Fallback Catalog for St Mary's Pharmacy
  * Ensures the storefront renders authentic Indian medicines immediately
  * even if deployed on static hosts (like Vercel) prior to backend linking.
  */
@@ -443,7 +443,7 @@ export const handleFallbackRequest = (config) => {
       data: {
         status: 'online',
         timestamp: new Date().toISOString(),
-        service: 'MediCare Pharmacy Client Engine',
+        service: "St Mary's Pharmacy Client Engine",
       },
     });
   }
